@@ -161,15 +161,15 @@
 
       <!--  020 > 010 ISBN -->
       <xsl:for-each select="marc:datafield[@tag = '020']">
-       <xsl:if test="marc:subfield[@code='a'] or marc:subfield[@code='b'] or marc:subfield[@code='c'] or marc:subfield[@code='z']">
+       <xsl:if test="marc:subfield[@code='a'] or marc:subfield[@code='q'] or marc:subfield[@code='c'] or marc:subfield[@code='z']">
         <datafield tag="010">
          <xsl:attribute name="ind1"><xsl:value-of select="@ind1"/></xsl:attribute>
          <xsl:attribute name="ind2"><xsl:value-of select="@ind2"/></xsl:attribute>
          <!-- this code code removes all non-numeric characters -->
-         <xsl:for-each select="marc:subfield[@code = 'a']"><subfield code="a"><xsl:value-of select="translate(text(),translate(text(),'0123456789-',''),'')"/></subfield></xsl:for-each>
-         <xsl:for-each select="marc:subfield[@code = 'b']"><subfield code="b"><xsl:value-of select="text()"/></subfield></xsl:for-each>
+         <xsl:for-each select="marc:subfield[@code = 'a']"><subfield code="a"><xsl:value-of select="translate(text(),translate(text(),'0123456789-xXхХ',''),'')"/></subfield></xsl:for-each>
+         <xsl:for-each select="marc:subfield[@code = 'q']"><subfield code="b"><xsl:value-of select="text()"/></subfield></xsl:for-each>
          <xsl:for-each select="marc:subfield[@code = 'c']"><subfield code="d"><xsl:value-of select="text()"/></subfield></xsl:for-each>
-         <xsl:for-each select="marc:subfield[@code = 'z']"><subfield code="z"><xsl:value-of select="translate(text(),translate(text(),'0123456789-',''),'')"/></subfield></xsl:for-each>
+         <xsl:for-each select="marc:subfield[@code = 'z']"><subfield code="z"><xsl:value-of select="translate(text(),translate(text(),'0123456789-xXхХ',''),'')"/></subfield></xsl:for-each>
         </datafield>
        </xsl:if>
       </xsl:for-each>
@@ -189,15 +189,22 @@
        </xsl:if>
       </xsl:for-each>
 
-      <!--<xsl:for-each select= "marc:datafield[@tag='024']">
-     <datafield tag="012">
+     <xsl:for-each select= "marc:datafield[@tag='024']">
+     <xsl:if test="marc:subfield[@code='a'] or marc:subfield[@code='q'] or marc:subfield[@code='d'] or marc:subfield[@code='c'] or marc:subfield[@code='z'] or marc:subfield[@code='2'] or marc:subfield[@code='6'] or marc:subfield[@code='8']">
+     <datafield tag="017">
       <xsl:attribute name="ind1"><xsl:value-of select="@ind1" /></xsl:attribute>
       <xsl:attribute name="ind2"><xsl:value-of select="@ind2" /></xsl:attribute>
-      <xsl:for-each select= "marc:subfield[@code='a']"><subfield code="?"><xsl:value-of select="text()" /></subfield></xsl:for-each>
-      <xsl:for-each select= "marc:subfield[@code='b']"><subfield code="?"><xsl:value-of select="text()" /></subfield></xsl:for-each>
-      <xsl:for-each select= "marc:subfield[@code='z']"><subfield code="?"><xsl:value-of select="text()" /></subfield></xsl:for-each>
+      <xsl:for-each select= "marc:subfield[@code='a']"><subfield code="a"><xsl:value-of select="text()" /></subfield></xsl:for-each>
+      <xsl:for-each select= "marc:subfield[@code='q']"><subfield code="b"><xsl:value-of select="text()" /></subfield></xsl:for-each>
+      <xsl:for-each select= "marc:subfield[@code='d']"><subfield code="c"><xsl:value-of select="text()" /></subfield></xsl:for-each>
+      <xsl:for-each select= "marc:subfield[@code='c']"><subfield code="d"><xsl:value-of select="text()" /></subfield></xsl:for-each>
+      <xsl:for-each select= "marc:subfield[@code='z']"><subfield code="z"><xsl:value-of select="text()" /></subfield></xsl:for-each>
+      <xsl:for-each select= "marc:subfield[@code='2']"><subfield code="2"><xsl:value-of select="text()" /></subfield></xsl:for-each>
+      <xsl:for-each select= "marc:subfield[@code='6']"><subfield code="6"><xsl:value-of select="text()" /></subfield></xsl:for-each>
+      <xsl:for-each select= "marc:subfield[@code='8']"><subfield code="8"><xsl:value-of select="text()" /></subfield></xsl:for-each>
      </datafield>
-    </xsl:for-each>-->
+     </xsl:if>
+     </xsl:for-each>
 
       <xsl:for-each select= "marc:datafield[@tag = '015']">
       <xsl:if test="marc:subfield[@code='a'] or marc:subfield[@code='2']">
@@ -361,7 +368,8 @@
          <xsl:variable name="u100a_loc_22_24">
           <xsl:choose>
            <xsl:when test="$f040b and string-length($f040b) = 3"><xsl:value-of select="$f040b"/></xsl:when>
-           <xsl:otherwise><xsl:value-of select="'eng'"/></xsl:otherwise><!-- Expected default for MARC21 -->
+           <xsl:otherwise><xsl:value-of select="'   '"/></xsl:otherwise>
+           <!-- <xsl:otherwise><xsl:value-of select="'eng'"/></xsl:otherwise> -->  <!-- Expected default for MARC21 -->
           </xsl:choose>
          </xsl:variable>
          <xsl:variable name="u100a_tc_25">
@@ -726,11 +734,16 @@
                  or marc:subfield[@code='n'] or marc:subfield[@code='p']">
        <datafield tag="200">
         <xsl:attribute name="ind1"><xsl:value-of select="@ind1"/></xsl:attribute>
-        <xsl:attribute name="ind2"><xsl:value-of select="' '"/></xsl:attribute>
+        <xsl:attribute name="ind2"><xsl:value-of select="@ind2"/></xsl:attribute>
+        <!-- <xsl:attribute name="ind2"><xsl:value-of select="' '"/></xsl:attribute> -->
         <xsl:for-each select= "marc:subfield[@code = 'a']">
          <subfield code="a"><xsl:call-template name="removeEndPuctuation"><xsl:with-param name="text" select="text()"/></xsl:call-template></subfield>
-         <xsl:if test="contains(text(), ' = ')"><subfield code="d"><xsl:value-of select="concat('=', substring-after(text(), ' ='))"/></subfield></xsl:if>
+         <xsl:if test="contains(text(), ' = ')">
+          <subfield code="d"><xsl:value-of select="concat('=', substring-after(text(), ' ='))"/></subfield>
+         </xsl:if>
         </xsl:for-each>
+        <!-- Форма назви йде в [], часто для випадків без назви --> 
+        <xsl:for-each select= "marc:subfield[@code = 'k']"><subfield code="a">[<xsl:value-of select="text()"/>]</subfield></xsl:for-each>
         <xsl:for-each select= "marc:subfield[@code = 'h']"><subfield code="b"><xsl:value-of select="text()"/></subfield></xsl:for-each>
         <xsl:for-each select= "marc:subfield[@code = 'b']"><subfield code="e"><xsl:call-template name="removeEndPuctuation"><xsl:with-param name="text" select="text()"/></xsl:call-template></subfield></xsl:for-each>
         <xsl:for-each select= "marc:subfield[@code = 'c']">
@@ -828,7 +841,79 @@
        </datafield>
       </xsl:if>
       </xsl:for-each>
-
+      
+      <!-- 336 » 181 -->
+      <xsl:for-each select= "marc:datafield[@tag = '336']">
+      <xsl:if test="marc:subfield[@code='b'] or marc:subfield[@code='0'] or marc:subfield[@code='2']">
+      <datafield tag="181">
+        <xsl:attribute name="ind1"><xsl:value-of select="' '"/></xsl:attribute>
+        <xsl:attribute name="ind2"><xsl:value-of select="' '"/></xsl:attribute>
+        <xsl:for-each select= "marc:subfield[@code = 'b']"><subfield code="c"><xsl:call-template name="removeEndPhysicalDescriptionPuctuation"><xsl:with-param name="text" select="text()"/></xsl:call-template></subfield></xsl:for-each>
+        <xsl:for-each select= "marc:subfield[@code = '0']"><subfield code="6"><xsl:call-template name="removeEndPhysicalDescriptionPuctuation"><xsl:with-param name="text" select="text()"/></xsl:call-template></subfield></xsl:for-each>
+        <xsl:for-each select= "marc:subfield[@code = '2']"><subfield code="2"><xsl:call-template name="removeEndPhysicalDescriptionPuctuation"><xsl:with-param name="text" select="text()"/></xsl:call-template></subfield></xsl:for-each>
+       </datafield>
+      </xsl:if>
+      </xsl:for-each>
+      
+      <!-- 336^a » 203^a -->
+      <xsl:for-each select= "marc:datafield[@tag = '336']">
+      <xsl:if test="marc:subfield[@code='a']">
+      <datafield tag="203">
+        <xsl:attribute name="ind1"><xsl:value-of select="' '"/></xsl:attribute>
+        <xsl:attribute name="ind2"><xsl:value-of select="' '"/></xsl:attribute>
+        <xsl:for-each select= "marc:subfield[@code = 'a']"><subfield code="a"><xsl:call-template name="removeEndPhysicalDescriptionPuctuation"><xsl:with-param name="text" select="text()"/></xsl:call-template></subfield></xsl:for-each>
+       </datafield>
+      </xsl:if>
+      </xsl:for-each>
+      
+      <!-- 337 » 182 -->
+      <xsl:for-each select= "marc:datafield[@tag = '337']">
+      <xsl:if test="marc:subfield[@code='b'] or marc:subfield[@code='0'] or marc:subfield[@code='2']">
+      <datafield tag="182">
+        <xsl:attribute name="ind1"><xsl:value-of select="' '"/></xsl:attribute>
+        <xsl:attribute name="ind2"><xsl:value-of select="' '"/></xsl:attribute>
+        <xsl:for-each select= "marc:subfield[@code = 'b']"><subfield code="c"><xsl:call-template name="removeEndPhysicalDescriptionPuctuation"><xsl:with-param name="text" select="text()"/></xsl:call-template></subfield></xsl:for-each>
+        <xsl:for-each select= "marc:subfield[@code = '0']"><subfield code="6"><xsl:call-template name="removeEndPhysicalDescriptionPuctuation"><xsl:with-param name="text" select="text()"/></xsl:call-template></subfield></xsl:for-each>
+        <xsl:for-each select= "marc:subfield[@code = '2']"><subfield code="2"><xsl:call-template name="removeEndPhysicalDescriptionPuctuation"><xsl:with-param name="text" select="text()"/></xsl:call-template></subfield></xsl:for-each>
+       </datafield>
+      </xsl:if>
+      </xsl:for-each>
+      
+      <!-- 337^a » 203^c -->
+      <xsl:for-each select= "marc:datafield[@tag = '337']">
+      <xsl:if test="marc:subfield[@code='a']">
+      <datafield tag="203">
+        <xsl:attribute name="ind1"><xsl:value-of select="' '"/></xsl:attribute>
+        <xsl:attribute name="ind2"><xsl:value-of select="' '"/></xsl:attribute>
+        <xsl:for-each select= "marc:subfield[@code = 'a']"><subfield code="c"><xsl:call-template name="removeEndPhysicalDescriptionPuctuation"><xsl:with-param name="text" select="text()"/></xsl:call-template></subfield></xsl:for-each>
+       </datafield>
+      </xsl:if>
+      </xsl:for-each>
+      
+      <!-- 338 » 183 -->
+      <xsl:for-each select= "marc:datafield[@tag = '338']">
+      <xsl:if test="marc:subfield[@code='b'] or marc:subfield[@code='0'] or marc:subfield[@code='2']">
+      <datafield tag="183">
+        <xsl:attribute name="ind1"><xsl:value-of select="' '"/></xsl:attribute>
+        <xsl:attribute name="ind2"><xsl:value-of select="' '"/></xsl:attribute>
+        <xsl:for-each select= "marc:subfield[@code = 'b']"><subfield code="a"><xsl:call-template name="removeEndPhysicalDescriptionPuctuation"><xsl:with-param name="text" select="text()"/></xsl:call-template></subfield></xsl:for-each>
+        <xsl:for-each select= "marc:subfield[@code = '0']"><subfield code="6"><xsl:call-template name="removeEndPhysicalDescriptionPuctuation"><xsl:with-param name="text" select="text()"/></xsl:call-template></subfield></xsl:for-each>
+        <xsl:for-each select= "marc:subfield[@code = '2']"><subfield code="2"><xsl:call-template name="removeEndPhysicalDescriptionPuctuation"><xsl:with-param name="text" select="text()"/></xsl:call-template></subfield></xsl:for-each>
+       </datafield>
+      </xsl:if>
+      </xsl:for-each>
+      
+      <!-- 338^a » 283^c -->
+      <xsl:for-each select= "marc:datafield[@tag = '338']">
+      <xsl:if test="marc:subfield[@code='a']">
+      <datafield tag="283">
+        <xsl:attribute name="ind1"><xsl:value-of select="' '"/></xsl:attribute>
+        <xsl:attribute name="ind2"><xsl:value-of select="' '"/></xsl:attribute>
+        <xsl:for-each select= "marc:subfield[@code = 'a']"><subfield code="a"><xsl:call-template name="removeEndPhysicalDescriptionPuctuation"><xsl:with-param name="text" select="text()"/></xsl:call-template></subfield></xsl:for-each>
+       </datafield>
+      </xsl:if>
+      </xsl:for-each>
+      
       <xsl:for-each select= "marc:datafield[@tag = '490']">
        <datafield tag="225">
         <xsl:attribute name="ind1"><xsl:value-of select="@ind1"/></xsl:attribute>
@@ -1555,6 +1640,16 @@
       <!-- </xsl:if> -->
 
       <xsl:for-each select= "marc:datafield[@tag = '600']">
+      <xsl:if test="marc:subfield[@code='a'] or 
+                    marc:subfield[@code='b'] or 
+                    marc:subfield[@code='c'] or 
+                    marc:subfield[@code='d'] or
+                    marc:subfield[@code='q'] or  
+                    marc:subfield[@code='t'] or 
+                    marc:subfield[@code='x'] or 
+                    marc:subfield[@code='y'] or 
+                    marc:subfield[@code='z'] or 
+                    marc:subfield[@code='2']">
        <xsl:choose>
         <xsl:when test="@ind1 != 3" >
          <datafield tag="600">
@@ -1577,6 +1672,7 @@
           <xsl:for-each select= "marc:subfield[@code = 'c']"><subfield code="c"><xsl:call-template name="removeEndPuctuation"><xsl:with-param name="text" select="text()"/></xsl:call-template></subfield></xsl:for-each>
           <xsl:for-each select= "marc:subfield[@code = 'b']"><subfield code="d"><xsl:value-of select="text()"/></subfield></xsl:for-each>
           <xsl:for-each select= "marc:subfield[@code = 'd']"><subfield code="f"><xsl:value-of select="text()"/></subfield></xsl:for-each>
+          <xsl:for-each select= "marc:subfield[@code = 'q']"><subfield code="g"><xsl:value-of select="text()"/></subfield></xsl:for-each>
           <xsl:for-each select= "marc:subfield[@code = 't']"><subfield code="t"><xsl:value-of select="text()"/></subfield></xsl:for-each>
           <xsl:for-each select= "marc:subfield[@code = 'x']"><subfield code="x"><xsl:value-of select="text()"/></subfield></xsl:for-each>
           <xsl:for-each select= "marc:subfield[@code = 'z']"><subfield code="y"><xsl:value-of select="text()"/></subfield></xsl:for-each>
@@ -1595,6 +1691,7 @@
          </datafield>
         </xsl:when>
        </xsl:choose>
+      </xsl:if>
       </xsl:for-each>
 
       <xsl:for-each select= "marc:datafield[@tag = '610']">
@@ -2001,15 +2098,19 @@
        </xsl:choose>
       </xsl:for-each>
 
-      <xsl:if test="marc:datafield[@tag='040']/marc:subfield[@code='a']  or marc:datafield[@tag='040']/marc:subfield[@code='c'] or marc:datafield[@tag='040']/marc:subfield[@code='d'] or marc:datafield[@tag='040']/marc:subfield[@code='e']">
+      <xsl:if test="marc:datafield[@tag='040']/marc:subfield[@code='a'] or 
+                    marc:datafield[@tag='040']/marc:subfield[@code='c'] or 
+                    marc:datafield[@tag='040']/marc:subfield[@code='d'] or 
+                    marc:datafield[@tag='040']/marc:subfield[@code='e']">
       <!-- or marc:controlfield[@tag='003'] -->
       <xsl:for-each select= "marc:datafield[@tag = '040']">
+       <xsl:variable name="f040e" select="marc:subfield[@code='e']"/>
        <xsl:for-each select= "marc:subfield[@code = 'a']">
          <datafield tag="801" ind1=" " ind2="0">
          <xsl:variable name="CountryFromMarcOrgCode"><xsl:call-template name="getCountryFromMarcOrgCode"><xsl:with-param name="marcOrgCode" select="text()"/></xsl:call-template></xsl:variable>
          <xsl:if test="$CountryFromMarcOrgCode and string-length($CountryFromMarcOrgCode) > 0"><subfield code="a"><xsl:value-of select="$CountryFromMarcOrgCode"/></subfield></xsl:if>
          <subfield code="b"><xsl:value-of select="text()"/></subfield>
-         <xsl:if test="marc:subfield[@code = 'e']"><subfield code="g"><xsl:value-of select="marc:subfield[@code = 'e']"/></subfield></xsl:if> 
+         <xsl:if test="$f040e"><subfield code="g"><xsl:value-of select="$f040e"/></subfield></xsl:if>
          </datafield>
        </xsl:for-each>
        <xsl:for-each select= "marc:subfield[@code = 'c']">
@@ -2017,6 +2118,7 @@
          <xsl:variable name="CountryFromMarcOrgCode"><xsl:call-template name="getCountryFromMarcOrgCode"><xsl:with-param name="marcOrgCode" select="text()"/></xsl:call-template></xsl:variable>
          <xsl:if test="$CountryFromMarcOrgCode and string-length($CountryFromMarcOrgCode) > 0"><subfield code="a"><xsl:value-of select="$CountryFromMarcOrgCode"/></subfield></xsl:if>
          <subfield code="b"><xsl:value-of select="text()"/></subfield>
+         <xsl:if test="$f040e"><subfield code="g"><xsl:value-of select="$f040e"/></subfield></xsl:if>
          </datafield>
        </xsl:for-each>
        <xsl:for-each select= "marc:subfield[@code = 'd']">
@@ -2024,9 +2126,10 @@
          <xsl:variable name="CountryFromMarcOrgCode"><xsl:call-template name="getCountryFromMarcOrgCode"><xsl:with-param name="marcOrgCode" select="text()"/></xsl:call-template></xsl:variable>
          <xsl:if test="$CountryFromMarcOrgCode and string-length($CountryFromMarcOrgCode) > 0"><subfield code="a"><xsl:value-of select="$CountryFromMarcOrgCode"/></subfield></xsl:if>
          <subfield code="b"><xsl:value-of select="text()"/></subfield>
+         <xsl:if test="$f040e"><subfield code="g"><xsl:value-of select="$f040e"/></subfield></xsl:if>
          </datafield>
        </xsl:for-each>
-       <xsl:for-each select= "marc:subfield[@code = 'e']"><subfield code="g"><xsl:value-of select="text()"/></subfield></xsl:for-each> 
+       <!-- <xsl:for-each select= "marc:subfield[@code = 'e']"><subfield code="g"><xsl:value-of select="text()"/></subfield></xsl:for-each>  -->
       </xsl:for-each>
       </xsl:if>
       
@@ -2052,11 +2155,26 @@
       </xsl:for-each>
 
       <!-- 090 > 852-->
-      <xsl:if test="marc:datafield[@tag='090']/marc:subfield[@code='a'] or marc:datafield[@tag='090']/marc:subfield[@code='x']">
+      <!-- <xsl:if test="marc:datafield[@tag='090']/marc:subfield[@code='a'] or marc:datafield[@tag='090']/marc:subfield[@code='b'] or marc:datafield[@tag='090']/marc:subfield[@code='x']"> -->
+      <xsl:if test="marc:datafield[@tag='090']/marc:subfield[@code='a']">
       <xsl:for-each select= "marc:datafield[@tag = '090']">
        <datafield tag="852" ind1=" " ind2=" ">
-        <xsl:for-each select= "marc:subfield[@code = 'a']"><subfield code="a"><xsl:value-of select="text()"/></subfield></xsl:for-each>
-        <xsl:for-each select= "marc:subfield[@code = 'x']"><subfield code="i"><xsl:value-of select="text()"/></subfield></xsl:for-each>
+        <xsl:for-each select= "marc:subfield[@code = 'a']"><subfield code="j"><xsl:value-of select="text()"/></subfield></xsl:for-each>
+        <!--<xsl:for-each select= "marc:subfield[@code = 'x']"><subfield code="i"><xsl:value-of select="text()"/></subfield></xsl:for-each>
+        <xsl:for-each select= "marc:subfield[@code = 'b']"><subfield code="i"><xsl:value-of select="text()"/></subfield></xsl:for-each> -->
+       </datafield>
+      </xsl:for-each>
+      </xsl:if>
+      
+      <!-- 090 > 942 Koha-->
+      <xsl:if test="marc:datafield[@tag='090']/marc:subfield[@code='a'] or 
+                    marc:datafield[@tag='090']/marc:subfield[@code='b'] or 
+                    marc:datafield[@tag='090']/marc:subfield[@code='x']">
+      <xsl:for-each select= "marc:datafield[@tag = '090']">
+       <datafield tag="942" ind1=" " ind2=" ">
+        <xsl:for-each select= "marc:subfield[@code = 'a']"><subfield code="j"><xsl:value-of select="text()"/></subfield></xsl:for-each>
+        <xsl:for-each select= "marc:subfield[@code = 'x']"><subfield code="v"><xsl:value-of select="text()"/></subfield></xsl:for-each>
+        <xsl:for-each select= "marc:subfield[@code = 'b']"><subfield code="v"><xsl:value-of select="text()"/></subfield></xsl:for-each>
        </datafield>
       </xsl:for-each>
       </xsl:if>
@@ -2128,6 +2246,116 @@
        </datafield>
       </xsl:for-each>
       </xsl:if>
+      
+      <!-- 942 Додаткові дані (Коха) -->
+      <xsl:for-each select="marc:datafield[@tag='942']">
+      <xsl:if test="marc:subfield[@code = '2'] or
+                    marc:subfield[@code = 'c'] or
+                    marc:subfield[@code = 's']">
+      <datafield tag="{'942'}">
+      <!-- ind1 Undefined -->
+      <xsl:attribute name="ind1"><xsl:value-of select="@ind1"/></xsl:attribute>
+      <!-- ind1 Undefined -->
+      <xsl:attribute name="ind2"><xsl:value-of select="@ind2"/></xsl:attribute>
+      <!-- 942^2 «« 942^2 Код системи класифікації для розстановки фонду -->
+      <xsl:for-each select="marc:subfield[@code = '2']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="2"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 942^c «« 942^c Тип одиниці (рівень запису) -->
+      <xsl:for-each select="marc:subfield[@code = 'c']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="c"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 942^s «« 942^s Позначка про запис серіального видання -->
+      <xsl:for-each select="marc:subfield[@code = 's']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="s"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      </datafield>
+      </xsl:if>
+      </xsl:for-each>
+      
+      <!-- 952 Дані про примірники та розташування (Koha) -->
+      <xsl:for-each select="marc:datafield[@tag='952']">
+      <xsl:if test="marc:subfield[@code = '0'] or
+          marc:subfield[@code = '1'] or
+          marc:subfield[@code = '2'] or
+          marc:subfield[@code = '4'] or
+          marc:subfield[@code = '7'] or
+          marc:subfield[@code = '8'] or
+          marc:subfield[@code = 'a'] or
+          marc:subfield[@code = 'b'] or
+          marc:subfield[@code = 'd'] or
+          marc:subfield[@code = 'e'] or
+          marc:subfield[@code = 'g'] or
+          marc:subfield[@code = 'h'] or
+          marc:subfield[@code = 'i'] or
+          marc:subfield[@code = 'o'] or
+          marc:subfield[@code = 'p'] or
+          marc:subfield[@code = 'q'] or
+          marc:subfield[@code = 'r'] or
+          marc:subfield[@code = 's'] or
+          marc:subfield[@code = 'u'] or
+          marc:subfield[@code = 'w'] or
+          marc:subfield[@code = 'y'] or
+          marc:subfield[@code = 'z']">
+          <!--
+          marc:subfield[@code = 'l'] or
+          marc:subfield[@code = 'm'] or
+          
+          -->
+      <datafield tag="{'995'}">
+      <!-- ind1 Undefined -->
+      <xsl:attribute name="ind1"><xsl:value-of select="@ind1"/></xsl:attribute>
+      <!-- ind1 Undefined -->
+      <xsl:attribute name="ind2"><xsl:value-of select="@ind2"/></xsl:attribute>
+      <!-- 995^0 «« 952^0 Статус вилучення -->
+      <xsl:for-each select="marc:subfield[@code = '0']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="0"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^1 «« 952^4 Стан пошкодження -->
+      <xsl:for-each select="marc:subfield[@code = '4']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="1"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^2 «« 952^1 Статус втрати/відсутності -->
+      <xsl:for-each select="marc:subfield[@code = '1']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="2"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^4 «« 952^2 Джерело класифікації чи схема поличного розташування -->
+      <xsl:for-each select="marc:subfield[@code = '2']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="4"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 7 	Уніфікований ідентифікатор ресурсів «« 952^u -->
+      <xsl:for-each select="marc:subfield[@code = 'u']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="7"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^o «« 952^7 Тип обігу (не для випожичання) -->
+      <xsl:for-each select="marc:subfield[@code = '7']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="o"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^h «« 952^8 Вид зібрання -->
+      <xsl:for-each select="marc:subfield[@code = '8']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="h"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^b «« 952^a Джерельне місце зберігання примірника (домашній підрозділ) -->
+      <xsl:for-each select="marc:subfield[@code = 'a']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="b"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^c «« 952^b Місце тимчасового зберігання чи видачі (підрозділ зберігання) -->
+      <xsl:for-each select="marc:subfield[@code = 'b']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="c"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^5 «« 952^d Дата надходження -->
+      <xsl:for-each select="marc:subfield[@code = 'd']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="5"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^s «« 952^e Джерело надходження (постачальник) -->
+      <xsl:for-each select="marc:subfield[@code = 'e']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="s"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^p «« 952^g Вартість, звичайна закупівельна ціна -->
+      <xsl:for-each select="marc:subfield[@code = 'g']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="p"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^v «« 952^h Нумерування/хронологія серіальних видань -->
+      <xsl:for-each select="marc:subfield[@code = 'h']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="v"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^j «« 952^i Інвентарний номер -->
+      <xsl:for-each select="marc:subfield[@code = 'i']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="j"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      
+      <!-- 995^? «« 952^l Видач загалом -->
+      <!-- <xsl:for-each select="marc:subfield[@code = 'l']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="l"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each> -->
+      <!-- 995^? «« 952^m Продовжень загалом -->
+      <!-- <xsl:for-each select="marc:subfield[@code = 'm']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="m"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each> -->
+      
+      <!-- 995^k «« 952^o Повний (примірниковий) шифр збереження -->
+      <xsl:for-each select="marc:subfield[@code = 'o']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="k"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^f «« 952^p Штрих-код -->
+      <xsl:for-each select="marc:subfield[@code = 'p']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="f"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^n «« 952^q Дата завершення терміну випожичання -->
+      <xsl:for-each select="marc:subfield[@code = 'q']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="n"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^i «« 952^r Дата, коли останній раз бачено примірник -->
+      <xsl:for-each select="marc:subfield[@code = 'r']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="i"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^m «« 952^s Дата останнього випожичання чи повернення -->
+      <xsl:for-each select="marc:subfield[@code = 's']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="m"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+
+      <!-- 995^W «« 952^w Дата, для якої чинна ціна заміни -->
+      <xsl:for-each select="marc:subfield[@code = 'w']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="W"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each> 
+
+      <!-- 995^r «« 952^y Тип одиниці (рівень примірника) -->
+      <xsl:for-each select="marc:subfield[@code = 'y']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="r"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      <!-- 995^u «« 952^z Загальнодоступна примітка щодо примірника -->
+      <xsl:for-each select="marc:subfield[@code = 'z']"><xsl:if test="text() and string-length(text()) > 0"><subfield code="u"><xsl:value-of select="text()"/></subfield></xsl:if></xsl:for-each>
+      </datafield>
+      </xsl:if>
+      </xsl:for-each>
       
       <xsl:call-template name="selects">
        <xsl:with-param name="i">900</xsl:with-param>
@@ -2578,7 +2806,7 @@
   <xsl:if test="$i &lt;= $count">
    <xsl:for-each select= "marc:datafield[@tag=$i]">
    <xsl:variable name="subfields"><xsl:for-each select= "marc:subfield[@code]"><xsl:value-of select="text()"/></xsl:for-each></xsl:variable>
-   <xsl:if test="$subfields and string-length($subfields) > 0">
+   <xsl:if test="$subfields and string-length($subfields) > 0 and $i!='942' and $i!='952' ">
    <datafield>
     <xsl:attribute name="tag"><xsl:value-of select="@tag" /></xsl:attribute>
     <xsl:attribute name="ind1">
